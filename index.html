@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>รวม VTuber ไทย - สไลด์โชว์ & ค้นหา</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #121212;
+    color: #fff;
+    padding: 2rem;
+    text-align: center;
+  }
+  h1 {
+    color: #00ffc8;
+    margin-bottom: 1rem;
+  }
+  input[type="text"] {
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto 2rem auto;
+    border-radius: 8px;
+    border: none;
+    display: block;
+  }
+  .profile {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 1rem;
+    max-width: 600px;
+    margin: 1rem auto 2rem auto;
+    box-shadow: 0 0 12px #00ffc8a0;
+    text-align: left;
+  }
+  .profile img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    float: left;
+    margin-right: 1rem;
+    border: 2px solid #00ffc8;
+  }
+  .profile h2 {
+    margin-top: 0;
+    color: #00ffc8;
+  }
+  .profile p {
+    margin: 0.3rem 0;
+  }
+  .not-found {
+    color: #ff4d4d;
+  }
+  /* สไลด์โชว์ */
+  .slideshow-container {
+    max-width: 400px;
+    margin: 0 auto 3rem auto;
+    position: relative;
+    height: 300px;
+  }
+  img.slide-image {
+    width: 100%;
+    height: 300px;
+    border-radius: 12px;
+    object-fit: cover;
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  img.slide-image.active {
+    opacity: 1;
+    position: relative;
+  }
+  .slide-name {
+    margin-top: 10px; /* ปรับตรงนี้ให้ข้อความชิดรูป */
+    font-size: 1.5rem;
+    color: #00ffc8;
+    font-weight: bold;
+  }
+  /* เคลียร์ float */
+  .clear {
+    clear: both;
+  }
+</style>
+</head>
+<body>
+
+<h1>รวม VTuber ไทย</h1>
+
+<input type="text" id="searchInput" placeholder="พิมพ์ชื่อ VTuber เช่น BabinCat" oninput="searchVTuber()" />
+
+<div id="profileDisplay"></div>
+
+<div class="slideshow-container" id="slideshow"></div>
+<div class="slide-name" id="slideName"></div>
+
+<script>
+  const vtuberData = {
+    "BabinCat": {
+      name: "BabinCat",
+      debut: "11 กันยายน 2024",
+      type: "VTuber อิสระ",
+      content: "เกม, ไลฟ์พูดคุย, ทำเพลง BGM, ทดลองแนวใหม่ๆ",
+      bio: "อดีตเป็นชายที่ถูกดัดแปลงร่างกลายเป็นสิ่งมีชีวิตใหม่ ไม่มีเพศแน่ชัด ร่างกายมี DNA แมว มีหูและหางแมว เสียงไม่เปลี่ยน ใช้ชีวิตอิสระในจักรวาลดิจิทัล",
+      image: "Babin.png"
+    },
+    "แมวดำอะฮิ": {
+      name: "ดำ",
+      debut: "ไม่ทราบ",
+      type: "ไม่ทราบ",
+      content: "ร้องเพลง, ไลฟ์เกม",
+      bio: "แมวจรที่ อะไรไม่รู้เหมือนกัน ไม่ได้ถาม",
+      image: "ดำ.jpg"
+    },
+    "MimiChii": {
+      name: "MimiChii",
+      debut: "10 สิงหาคม 2023",
+      type: "VTuber อิสระ",
+      content: "วาไรตี้, เกม, ไลฟ์พูดคุย",
+      bio: "สาวน้อยชิลๆ ผู้ชอบทำคอนเทนต์หลากหลายแนวและสร้างรอยยิ้มให้แฟนๆ",
+      image: "images/MimiChii.png"
+    }
+  };
+
+  const container = document.getElementById('slideshow');
+  const slideName = document.getElementById('slideName');
+  const profileDisplay = document.getElementById('profileDisplay');
+
+  const vtubers = Object.values(vtuberData);
+  let currentIndex = 0;
+  let slides = [];
+
+  // สร้าง img แต่ละรูป สไตล์ fade
+  vtubers.forEach((vtuber, i) => {
+    const img = document.createElement('img');
+    img.src = vtuber.image;
+    img.alt = vtuber.name;
+    img.classList.add('slide-image');
+    if (i === 0) img.classList.add('active');
+    container.appendChild(img);
+    slides.push(img);
+  });
+
+  slideName.textContent = vtubers[0].name;
+
+  function showSlide(index) {
+    slides.forEach(img => img.classList.remove('active'));
+    slides[index].classList.add('active');
+    slideName.textContent = vtubers[index].name;
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+  }
+
+  // สไลด์อัตโนมัติทุก 3 วินาที
+  setInterval(nextSlide, 3000);
+
+  // ค้นหา VTuber
+  function searchVTuber() {
+    const input = document.getElementById('searchInput').value.trim().toLowerCase();
+    profileDisplay.innerHTML = '';
+
+    if(input === '') return;
+
+    let found = null;
+    for(const key in vtuberData) {
+      if(key.toLowerCase().includes(input)) {
+        found = vtuberData[key];
+        break;
+      }
+    }
+
+    if(found) {
+      profileDisplay.innerHTML = `
+        <div class="profile">
+          <img src="${found.image}" alt="${found.name}" />
+          <h2>${found.name}</h2>
+          <p><strong>วันเปิดตัว:</strong> ${found.debut}</p>
+          <p><strong>สังกัด:</strong> ${found.type}</p>
+          <p><strong>คอนเทนต์:</strong> ${found.content}</p>
+          <p><strong>ความเป็นมา:</strong> ${found.bio}</p>
+          <div class="clear"></div>
+        </div>
+      `;
+    } else {
+      profileDisplay.innerHTML = `<p class="not-found">ไม่พบ VTuber ชื่อนี้</p>`;
+    }
+  }
+</script>
+
+</body>
+</html>
